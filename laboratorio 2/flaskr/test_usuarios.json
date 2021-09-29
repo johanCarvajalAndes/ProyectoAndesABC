@@ -1,0 +1,27 @@
+[
+{
+	"user":"alvaro",
+	"pass":"12345",
+	"codigo_respuesta":400
+},
+{
+	"user":"pablo",
+	"pass":"123",
+	"codigo_respuesta":400
+},
+{
+	"user":"andres",
+	"pass":"123456789",
+	"codigo_respuesta":200
+},
+{
+	"user":"marcos",
+	"pass":"1234",
+	"codigo_respuesta":400
+},
+{
+	"user":"johan",
+	"pass":"123456789",
+	"codigo_respuesta":200
+}
+]
