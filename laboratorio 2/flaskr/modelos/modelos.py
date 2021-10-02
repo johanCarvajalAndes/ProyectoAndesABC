@@ -12,6 +12,10 @@ class Usuario(db.Model):
     nombre = db.Column(db.String(50))
     contrasena = db.Column(db.String(50))
 
+class Token(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    token = db.Column(db.String(512))
+    usuario = db.Column(db.String(50))
 
 
 class EnumADiccionario(fields.Field):
@@ -26,6 +30,11 @@ class UsuarioSchema(SQLAlchemyAutoSchema):
     class Meta:
          model = Usuario
          include_relationships = True
+         load_instance = True
+
+class TokenSchema(SQLAlchemyAutoSchema):
+    class Meta:
+         model = Token
          load_instance = True
 
 
