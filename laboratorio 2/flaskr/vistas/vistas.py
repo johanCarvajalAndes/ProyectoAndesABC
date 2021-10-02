@@ -23,6 +23,7 @@ class VistaLogIn(Resource):
         else:
             token_de_acceso = create_access_token(identity = usuario.id)
             token = Token(token = token_de_acceso, usuario = usuario.id)
+            #db.session.query(Token).delete()
             db.session.add(token)
             db.session.commit()
             return {"mensaje":"Inicio de sesión exitoso", "token": token_de_acceso}
@@ -30,5 +31,12 @@ class VistaLogIn(Resource):
 class VistaToken(Resource):
 
     def get(self, id_token):
+        # token = Token.query.filter(Token.usuario == id_token).limit(1)
         token = Token.query.filter(Token.usuario == id_token).first()
         return token_schema.dump(token)
+
+class VistaUsuario(Resource):
+
+    def get(self, id_usuario):
+        usuario = Usuario.query.filter(Usuario.id == id_usuario).first()
+        return usuario_schema.dump(usuario)
