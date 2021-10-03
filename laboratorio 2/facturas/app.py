@@ -1,7 +1,7 @@
-from flaskr import create_app
+from . import create_app
 from flask_restful import Api
 from .modelos import db
-from .vistas import VistaLogIn, VistaToken, VistaUsuario
+from .vistas.vistas import VistaFacturas, VistaFactura, VistaNuevaFactura
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS, cross_origin
 
@@ -13,9 +13,13 @@ db.init_app(app)
 db.create_all()
 cors = CORS(app)
 
+#PRUEBA
+
 api = Api(app)
-api.add_resource(VistaLogIn, '/logIn')
-api.add_resource(VistaToken, '/token/<int:id_token>')
-api.add_resource(VistaUsuario, '/user/<int:id_usuario>')
+
+api.add_resource(VistaFacturas,'/facturas')
+api.add_resource(VistaFactura,'/factura/<int:id_factura>')
+api.add_resource(VistaNuevaFactura,'/factura')
 
 jwt = JWTManager(app)
+
