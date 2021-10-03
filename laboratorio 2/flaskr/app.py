@@ -16,6 +16,6 @@ cors = CORS(app)
 api = Api(app)
 api.add_resource(VistaLogIn, '/logIn')
 api.add_resource(VistaToken, '/token/<int:id_token>')
-api.add_resource(VistaUsuario, '/user/<int:id_user>')
+api.add_resource(VistaUsuario, '/user/<int:id_usuario>')
 
 jwt = JWTManager(app)

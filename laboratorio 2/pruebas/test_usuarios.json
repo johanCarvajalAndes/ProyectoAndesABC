@@ -1,0 +1,27 @@
+[
+{
+	"user":"alvaro",
+	"pass":"12345",
+	"permiso":"1"
+},
+{
+	"user":"pablo",
+	"pass":"123",
+	"permiso":"3"
+},
+{
+	"user":"andres",
+	"pass":"123456789",
+	"permiso":"1"
+},
+{
+	"user":"marcos",
+	"pass":"1234",
+	"permiso":"6"
+},
+{
+	"user":"johan",
+	"pass":"123456789",
+	"permiso":"2"
+}
+]

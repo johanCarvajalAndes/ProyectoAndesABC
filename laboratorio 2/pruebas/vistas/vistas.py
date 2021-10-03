@@ -1,12 +1,10 @@
 from flask import request
 from faker import Faker
-from flaskr.modelos.modelos import TokenSchema
+from flaskr.modelos.modelos import TokenSchema, Usuario
 from ..modelos import db, Pruebas, PruebasSchema
 from flask_restful import Resource
-from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
-import sys 
 import requests 
-from flaskr.modelos import Token, TokenSchema
+from flaskr.modelos import TokenSchema
 from datetime import datetime
 import json
 
@@ -48,46 +46,71 @@ class VistaPrueba(Resource):
         return '',204
 
 class VistaRequest(Resource):
-    tokenList = []
-
     def tokenRandom(self):
-        global tokenList
+        tokenList = []
         faker = Faker()
         for i in range(5):
-            self.tokenList.append(faker.password(length=260))
+            tokenList.append(faker.password(length=260))
+        return tokenList
+    
+    def cargarUsuarios(self):
+        with open("test_usuarios.json") as jsonFile:
+            jsonObject = json.load(jsonFile)
+            jsonFile.close()
+        db.session.query(Usuario).delete()
+        
+        for i in range(len(jsonObject)):
+            usuario = jsonObject[i]
+            nombre = usuario['user']
+            contrasena = usuario['pass']
+            permiso = usuario['permiso']
+            nuevoUsuario = Usuario(nombre=nombre, contrasena=contrasena, permiso=permiso)
+
+            db.session.add(nuevoUsuario)
+            db.session.commit()
 
     def get(self):
-        global tokenList
-        self.tokenRandom()
-        for j in range(1,3):   
+        for j in range(1,6):   
+            arreglo = self.tokenRandom()
             url = 'http://127.0.0.1:5000/token/'+str(j)
             token = requests.get(url)
             data = token.json()
             valorToken = data['token']
-            self.tokenList.append(valorToken)
-            for i in range(len(self.tokenList)):
-                tokenBearer = 'Bearer ' + self.tokenList[i]
-                cabeceras = {'Authorization': tokenBearer} 
-                content = requests.get('http://127.0.0.1:5001/facturas', headers=cabeceras)
+            valorUsuario = data['usuario']
+            arreglo.append(valorToken)
 
-                if (content):
-                    resultado = True
-                    fecha = datetime.now()
-                    nueva_prueba = Pruebas(fecha=fecha, resultado=resultado)
-                    db.session.add(nueva_prueba)
-                    db.session.commit()
-                    #return "El usuario existe", 200
-                    print( "El usuario existe", 200)
+            for i in range(len(arreglo)):
+                tokenBearer = 'Bearer ' + arreglo[i]
+                cabeceras = {'Authorization': tokenBearer}
+                factura =  'http://127.0.0.1:5001/facturas'
+                content = requests.get(factura, headers=cabeceras)
+                contenido = content.json()
 
-                else:
+                if len(contenido) == 16:
                     resultado = False
                     fecha = datetime.now()
                     nueva_prueba = Pruebas(fecha=fecha, resultado=resultado)
                     db.session.add(nueva_prueba)
                     db.session.commit()
-                    #return "El usuario no existe", 404
-                    print("El usuario no existe", 404)
-        
+                    print("PERMISO DENEGADO", 404)
+
+                elif len(contenido) == 1:
+                    resultado = False
+                    fecha = datetime.now()
+                    nueva_prueba = Pruebas(fecha=fecha, resultado=resultado)
+                    db.session.add(nueva_prueba)
+                    db.session.commit()
+                    print("USUARIO NO AUTORIZADO", 404)
+
+                else:
+                    resultado = True
+                    fecha = datetime.now()
+                    nueva_prueba = Pruebas(fecha=fecha, resultado=resultado)
+                    db.session.add(nueva_prueba)
+                    db.session.commit()
+                    print( "El usuario ", valorUsuario, " pudo leer las facturas ", 200)
+                
+            arreglo.clear()
 
     
     

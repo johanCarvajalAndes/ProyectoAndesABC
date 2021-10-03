@@ -3,6 +3,7 @@ from ..modelos import db, Facturas, FacturasSchema
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
 import sys
+import requests
 
 factura_schema = FacturasSchema()
 
@@ -10,7 +11,20 @@ class VistaFacturas(Resource):
     
     @jwt_required()
     def get(self):
-        return [factura_schema.dump(f) for f in Facturas.query.all()]
+        current_user = get_jwt_identity()
+        try:
+            url = 'http://127.0.0.1:5000/user/'+str(current_user)
+            permiso = requests.get(url)
+            data = permiso.json()
+            valorPermiso = int(data['permiso'])
+            valorNombre = data['nombre']
+            if valorPermiso == 1:
+                print("El usuario ", valorNombre, " tiene permisos de lectura")
+                return [factura_schema.dump(f) for f in Facturas.query.all()]
+            else:
+                return "PERMISO DENEGADO"
+        except:
+            return "USUARIO NO EXISTE"
 
 class VistaNuevaFactura(Resource):
 
